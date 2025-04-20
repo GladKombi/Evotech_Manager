@@ -1,0 +1,284 @@
+<!-- equipe.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evotech Africa - Équipe</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        scroll-behavior: smooth;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(45deg, #3B82F6, #10B981);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(45deg, #3B82F6, #10B981);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    }
+    
+    .service-card {
+        transition: all 0.3s ease;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-link {
+        position: relative;
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background: linear-gradient(45deg, #3B82F6, #10B981);
+        transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+        width: 100%;
+    }
+</style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <header x-data="{ open: false }" class="bg-white shadow-md fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center">
+                    <span class="text-2xl font-bold gradient-text">Evotech</span>
+                    <span class="ml-1 text-gray-700 font-semibold">Africa</span>
+                </a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Accueil</a>
+                <a href="services.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Services</a>
+                <a href="projets.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Projets</a>
+                <a href="equipe.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Équipe</a>
+                <a href="apropos.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">À propos</a>
+                <a href="contact.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Contact</a>
+            </nav>
+            
+            <!-- Mobile Navigation Button -->
+            <button @click="open = !open" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div x-show="open" @click.away="open = false" class="md:hidden bg-white shadow-lg absolute w-full" x-cloak>
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="index.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Accueil</a>
+                <a href="services.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Services</a>
+                <a href="projets.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Projets</a>
+                <a href="equipe.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Équipe</a>
+                <a href="apropos.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">À propos</a>
+                <a href="contact.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Contact</a>
+            </div>
+        </div>
+    </header>
+
+  <section class="pt-32 pb-12 bg-white">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl font-bold mb-4 gradient-text">Notre Équipe</h1>
+      <p class="text-gray-600 max-w-xl mx-auto">
+        Une équipe d'experts passionnés, prête à concrétiser vos idées les plus ambitieuses.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Membre 1 -->
+      <div class="bg-white shadow-md rounded-xl overflow-hidden text-center" data-aos="fade-up">
+        <img src="/api/placeholder/300/300" alt="CEO" class="w-full h-64 object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-bold">Olivier Nkomo</h3>
+          <p class="text-gray-600">CEO & Fondateur</p>
+        </div>
+      </div>
+      <!-- Membre 2 -->
+      <div class="bg-white shadow-md rounded-xl overflow-hidden text-center" data-aos="fade-up" data-aos-delay="100">
+        <img src="/api/placeholder/300/300" alt="CTO" class="w-full h-64 object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-bold">Amina Touré</h3>
+          <p class="text-gray-600">Directrice Technique</p>
+        </div>
+      </div>
+      <!-- Membre 3 -->
+      <div class="bg-white shadow-md rounded-xl overflow-hidden text-center" data-aos="fade-up" data-aos-delay="200">
+        <img src="/api/placeholder/300/300" alt="Architecture" class="w-full h-64 object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-bold">Jean-Marc Koné</h3>
+          <p class="text-gray-600">Directeur Architecture</p>
+        </div>
+      </div>
+      <!-- Membre 4 -->
+      <div class="bg-white shadow-md rounded-xl overflow-hidden text-center" data-aos="fade-up" data-aos-delay="300">
+        <img src="/api/placeholder/300/300" alt="Marketing" class="w-full h-64 object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-bold">Aïcha Diop</h3>
+          <p class="text-gray-600">Directrice Marketing</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Album photo -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4 text-center mb-12">
+      <h2 class="text-3xl font-bold mb-4">Album Photo</h2>
+      <p class="text-gray-600 max-w-xl mx-auto">Quelques instants capturés lors de nos projets et événements.</p>
+    </div>
+    <div class="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <img src="/api/placeholder/300/200" alt="photo 1" class="rounded-lg shadow-md" data-aos="zoom-in">
+      <img src="/api/placeholder/300/200" alt="photo 2" class="rounded-lg shadow-md" data-aos="zoom-in" data-aos-delay="100">
+      <img src="/api/placeholder/300/200" alt="photo 3" class="rounded-lg shadow-md" data-aos="zoom-in" data-aos-delay="200">
+      <img src="/api/placeholder/300/200" alt="photo 4" class="rounded-lg shadow-md" data-aos="zoom-in" data-aos-delay="300">
+    </div>
+  </section>
+
+  <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-6">
+                        <span class="text-2xl font-bold text-blue-400">Evotech</span>
+                        <span class="ml-1 text-gray-300 font-semibold">Africa</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Solutions innovantes pour un avenir connecté et durable en Afrique.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Liens Rapides</h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="index.html" class="text-gray-400 hover:text-blue-400 transition-colors">Accueil</a>
+                        </li>
+                        <li>
+                            <a href="apropos.html" class="text-gray-400 hover:text-blue-400 transition-colors">À propos</a>
+                        </li>
+                        <li>
+                            <a href="services.html" class="text-gray-400 hover:text-blue-400 transition-colors">Services</a>
+                        </li>
+                        <li>
+                            <a href="projets.html" class="text-gray-400 hover:text-blue-400 transition-colors">Projets</a>
+                        </li>
+                        <li>
+                            <a href="equipe.html" class="text-gray-400 hover:text-blue-400 transition-colors">Équipe</a>
+                        </li>
+                        <li>
+                            <a href="contact.html" class="text-gray-400 hover:text-blue-400 transition-colors">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Services -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Nos Services</h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="services.html#informatique" class="text-gray-400 hover:text-blue-400 transition-colors">Solutions Informatiques</a>
+                        </li>
+                        <li>
+                            <a href="services.html#architecture" class="text-gray-400 hover:text-blue-400 transition-colors">Architecture & Construction</a>
+                        </li>
+                        <li>
+                            <a href="services.html#communication" class="text-gray-400 hover:text-blue-400 transition-colors">Communication Visuelle</a>
+                        </li>
+                        <li>
+                            <a href="services.html#conseil" class="text-gray-400 hover:text-blue-400 transition-colors">Conseil en Innovation</a>
+                        </li>
+                        <li>
+                            <a href="services.html#formation" class="text-gray-400 hover:text-blue-400 transition-colors">Formation Professionnelle</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Contact</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-blue-400"></i>
+                            <span class="text-gray-400">Av. Ngulo<br>Butembo, RDC</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-3 text-blue-400"></i>
+                            <span class="text-gray-400">+243000000000</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-blue-400"></i>
+                            <span class="text-gray-400">contact@evotech-africa.net</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock mr-3 text-blue-400"></i>
+                            <span class="text-gray-400">Lun-Ven: 8h-18h</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+                <p class="text-gray-500">
+                    &copy; 2025 Evotech Africa. Tous droits réservés.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
+    });
+  </script>
+</body>
+</html>

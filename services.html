@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evotech Africa - Services</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;max-width:100%;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #3B82F6, #10B981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #3B82F6, #10B981);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: linear-gradient(45deg, #3B82F6, #10B981);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <header x-data="{ open: false }" class="bg-white shadow-md fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center">
+                    <span class="text-2xl font-bold gradient-text">Evotech</span>
+                    <span class="ml-1 text-gray-700 font-semibold">Africa</span>
+                </a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Accueil</a>
+                <a href="services.html" class="nav-link text-blue-600 font-medium hover:text-blue-600 transition-colors">Services</a>
+                <a href="projets.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Projets</a>
+                <a href="equipe.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Équipe</a>
+                <a href="apropos.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">À propos</a>
+                <a href="contact.html" class="nav-link text-gray-800 font-medium hover:text-blue-600 transition-colors">Contact</a>
+            </nav>
+            
+            <!-- Mobile Navigation Button -->
+            <button @click="open = !open" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div x-show="open" @click.away="open = false" class="md:hidden bg-white shadow-lg absolute w-full" x-cloak>
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="index.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Accueil</a>
+                <a href="services.html" class="text-blue-600 font-medium py-2 hover:text-blue-600 transition-colors">Services</a>
+                <a href="projets.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Projets</a>
+                <a href="equipe.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Équipe</a>
+                <a href="apropos.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">À propos</a>
+                <a href="contact.html" class="text-gray-800 font-medium py-2 hover:text-blue-600 transition-colors">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 bg-gradient-to-br from-blue-50 to-teal-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center" data-aos="fade-up">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">Nos <span class="gradient-text">Services</span></h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Explorez notre gamme complète de services conçus pour répondre aux besoins de votre entreprise. Chez Evotech Africa, nous combinons expertise technique, vision créative et service personnalisé.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="service-card bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-5">
+                        <i class="fas fa-laptop-code text-3xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Solutions Informatiques</h3>
+                    <p class="text-gray-600">
+                        Des solutions technologiques innovantes pour stimuler votre croissance numérique.
+                    </p>
+                </div>
+                
+                <div class="service-card bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-5">
+                        <i class="fas fa-building text-3xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Architecture & Construction</h3>
+                    <p class="text-gray-600">
+                        Conception et réalisation d'espaces modernes, durables et fonctionnels.
+                    </p>
+                </div>
+                
+                <div class="service-card bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-5">
+                        <i class="fas fa-bullhorn text-3xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Communication Visuelle</h3>
+                    <p class="text-gray-600">
+                        Stratégies de communication et marketing pour valoriser votre image de marque.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- IT Solutions Section -->
+    <section id="informatique" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0 md:pr-10" data-aos="fade-right">
+                    <div class="mb-6 inline-block">
+                        <span class="text-sm font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">Technologie</span>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-6">Solutions Informatiques</h2>
+                    <p class="text-gray-600 mb-6">
+                        Notre équipe d'experts en technologie crée des solutions informatiques personnalisées qui répondent précisément à vos besoins commerciaux. Nous offrons un large éventail de services, du développement d'applications à l'intégration de systèmes et au support technique.
+                    </p>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Développement de logiciels sur mesure</h4>
+                                <p class="text-gray-600">Applications web et mobile adaptées à vos processus métier spécifiques.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Solutions cloud et infrastructure</h4>
+                                <p class="text-gray-600">Migration vers le cloud, gestion des serveurs et solutions de stockage sécurisées.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Intégration de systèmes</h4>
+                                <p class="text-gray-600">Connectez vos différents systèmes informatiques pour une efficacité opérationnelle maximale.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Cybersécurité</h4>
+                                <p class="text-gray-600">Protection contre les menaces numériques et sécurisation de vos données sensibles.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2" data-aos="fade-left">
+                    <img src="/api/placeholder/600/400" alt="Services IT" class="rounded-xl shadow-xl w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row-reverse items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0 md:pl-10" data-aos="fade-left">
+                    <div class="mb-6 inline-block">
+                        <span class="text-sm font-semibold text-green-600 bg-green-100 px-3 py-1 rounded-full">Architecture</span>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-6">Architecture & Construction</h2>
+                    <p class="text-gray-600 mb-6">
+                        Notre département d'architecture conçoit des espaces qui combinent esthétique, fonctionnalité et durabilité. Nous accompagnons vos projets de construction de la conception à la réalisation, en intégrant des solutions innovantes adaptées au climat africain.
+                    </p>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Conception architecturale</h4>
+                                <p class="text-gray-600">Designs modernes et adaptés aux spécificités locales, plans détaillés et modélisations 3D.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Gestion de projets de construction</h4>
+                                <p class="text-gray-600">Supervision complète du projet, de la planification à la livraison finale.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Architecture durable</h4>
+                                <p class="text-gray-600">Intégration de solutions écologiques et énergétiquement efficientes.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Rénovation et réaménagement</h4>
+                                <p class="text-gray-600">Transformation d'espaces existants pour de nouveaux usages ou une meilleure performance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2" data-aos="fade-right">
+                    <img src="/api/placeholder/600/400" alt="Services Architecture" class="rounded-xl shadow-xl w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Communication Section -->
+    <section id="communication" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0 md:pr-10" data-aos="fade-right">
+                    <div class="mb-6 inline-block">
+                        <span class="text-sm font-semibold text-purple-600 bg-purple-100 px-3 py-1 rounded-full">Communication</span>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-6">Communication Visuelle</h2>
+                    <p class="text-gray-600 mb-6">
+                        Notre équipe créative développe des stratégies de communication percutantes qui renforcent votre image de marque et captent l'attention de votre audience cible. Nous combinons design graphique, marketing digital et expertise médiatique.
+                    </p>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Identité visuelle et branding</h4>
+                                <p class="text-gray-600">Création de logos, charte graphique et éléments visuels cohérents pour votre marque.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Marketing digital</h4>
+                                <p class="text-gray-600">Campagnes publicitaires en ligne, gestion des réseaux sociaux et référencement web.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Conception graphique</h4>
+                                <p class="text-gray-600">Création de supports visuels impactants pour tous vos besoins de communication.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold">Stratégie de contenu</h4>
+                                <p class="text-gray-600">Développement de contenus pertinents et engageants pour votre audience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2" data-aos="fade-left">
+                    <img src="/api/placeholder/600/400" alt="Services Communication" class="rounded-xl shadow-xl w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Services -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl font-bold mb-4">Services complémentaires</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    En plus de nos domaines d'expertise principaux, nous proposons des services complémentaires pour répondre à tous vos besoins.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Consulting Service -->
+                <div id="conseil" class="service-card bg-white rounded-xl shadow-lg p-6" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="flex items-start">
+                        <div class="w-14 h-14 bg-yellow-100 rounded-lg flex items-center justify-center mr-5">
+                            <i class="fas fa-lightbulb text-2xl text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-3">Conseil en Innovation</h3>
+                            <p class="text-gray-600 mb-4">
+                                Nous vous accompagnons dans votre transformation digitale et votre démarche d'innovation. Notre équipe d'experts analyse vos besoins, identifie les opportunités et élabore des stratégies sur mesure pour optimiser votre compétitivité.
+                            </p>
+                            <ul class="space-y-2 mb-4 text-gray-600">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-yellow-600 mr-2"></i>
+                                    Audit et diagnostic numérique
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-yellow-600 mr-2"></i>
+                                    Transformation digitale
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-yellow-600 mr-2"></i>
+                                    Veille technologique et conseil stratégique
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Training Service -->
+                <div id="formation" class="service-card bg-white rounded-xl shadow-lg p-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="flex items-start">
+                        <div class="w-14 h-14 bg-red-100 rounded-lg flex items-center justify-center mr-5">
+                            <i class="fas fa-chalkboard-teacher text-2xl text-red-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-3">Formation Professionnelle</h3>
+                            <p class="text-gray-600 mb-4">
+                                Nous proposons des programmes de formation adaptés à vos besoins spécifiques pour renforcer les compétences de vos équipes. Nos formations couvrent les domaines de l'informatique, du design et de la gestion de projets.
+                            </p>
+                            <ul class="space-y-2 mb-4 text-gray-600">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-red-600 mr-2"></i>
+                                    Formation aux outils numériques
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-red-600 mr-2"></i>
+                                    Ateliers de design thinking
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-red-600 mr-2"></i>
+                                    Formation en gestion de projets agiles
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="py-20 bg-gradient-to-br from-blue-50 to-teal-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl font-bold mb-4">Notre Processus</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Une approche méthodique et collaborative pour garantir la réussite de vos projets.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Step 1 -->
+                <div class="bg-white rounded-xl p-6 shadow-lg relative" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full text-white flex items-center justify-center text-xl font-bold mb-4">1</div>
+                    <h3 class="text-xl font-bold mb-3">Consultation</h3>
+                    <p class="text-gray-600">
+                        Nous analysons vos besoins et objectifs pour comprendre parfaitement votre vision et vos défis.
+                    </p>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="bg-white rounded-xl p-6 shadow-lg relative" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full text-white flex items-center justify-center text-xl font-bold mb-4">2</div>
+                    <h3 class="text-xl font-bold mb-3">Conception</h3>
+                    <p class="text-gray-600">
+                        Nous élaborons des solutions sur mesure et des prototypes pour visualiser les résultats attendus.
+                    </p>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="bg-white rounded-xl p-6 shadow-lg relative" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full text-white flex items-center justify-center text-xl font-bold mb-4">3</div>
+                    <h3 class="text-xl font-bold mb-3">Réalisation</h3>
+                    <p class="text-gray-600">
+                        Notre équipe d'experts développe et met en œuvre les solutions conçues avec rigueur et précision.
+                    </p>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="bg-white rounded-xl p-6 shadow-lg relative" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full text-white flex items-center justify-center text-xl font-bold mb-4">4</div>
+                    <h3 class="text-xl font-bold mb-3">Suivi & Support</h3>
+                    <p class="text-gray-600">
+                        Nous assurons un accompagnement continu pour garantir la pérennité et l'évolution de vos solutions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-br from-blue-600 to-teal-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6" data-aos="fade-up">Prêt à démarrer votre projet ?</h2>
+            <p class="text-lg mb-8 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                Notre équipe est prête à vous accompagner dans la réalisation de vos ambitions. Contactez-nous dès aujourd'hui pour une consultation personnalisée.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                <a href="contact.html" class="bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-50 transition-colors">
+                    Demander un devis
+                </a>
+                <a href="projets.html" class="bg-transparent text-white font-semibold px-8 py-3 rounded-lg border-2 border-white hover:bg-white/10 transition-colors">
+                    Voir nos réalisations
+                </a>
+            </div>
+        </div>
+    </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center mb-6">
+                    <span class="text-2xl font-bold text-blue-400">Evotech</span>
+                    <span class="ml-1 text-gray-300 font-semibold">Africa</span>
+                </div>
+                <p class="text-gray-400 mb-6">
+                    Solutions innovantes pour un avenir connecté et durable en Afrique.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-bold mb-6">Liens Rapides</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="index.html" class="text-gray-400 hover:text-blue-400 transition-colors">Accueil</a>
+                    </li>
+                    <li>
+                        <a href="apropos.html" class="text-gray-400 hover:text-blue-400 transition-colors">À propos</a>
+                    </li>
+                    <li>
+                        <a href="services.html" class="text-gray-400 hover:text-blue-400 transition-colors">Services</a>
+                    </li>
+                    <li>
+                        <a href="projets.html" class="text-gray-400 hover:text-blue-400 transition-colors">Projets</a>
+                    </li>
+                    <li>
+                        <a href="equipe.html" class="text-gray-400 hover:text-blue-400 transition-colors">Équipe</a>
+                    </li>
+                    <li>
+                        <a href="contact.html" class="text-gray-400 hover:text-blue-400 transition-colors">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Services -->
+            <div>
+                <h3 class="text-lg font-bold mb-6">Nos Services</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="services.html#informatique" class="text-gray-400 hover:text-blue-400 transition-colors">Solutions Informatiques</a>
+                    </li>
+                    <li>
+                        <a href="services.html#architecture" class="text-gray-400 hover:text-blue-400 transition-colors">Architecture & Construction</a>
+                    </li>
+                    <li>
+                        <a href="services.html#communication" class="text-gray-400 hover:text-blue-400 transition-colors">Communication Visuelle</a>
+                    </li>
+                    <li>
+                        <a href="services.html#conseil" class="text-gray-400 hover:text-blue-400 transition-colors">Conseil en Innovation</a>
+                    </li>
+                    <li>
+                        <a href="services.html#formation" class="text-gray-400 hover:text-blue-400 transition-colors">Formation Professionnelle</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div>
+                <h3 class="text-lg font-bold mb-6">Contact</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt mt-1 mr-3 text-blue-400"></i>
+                        <span class="text-gray-400">Av. Ngulo<br>Butembo, RDC</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-phone mr-3 text-blue-400"></i>
+                        <span class="text-gray-400">+243000000000</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-envelope mr-3 text-blue-400"></i>
+                        <span class="text-gray-400">contact@evotech-africa.net</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-clock mr-3 text-blue-400"></i>
+                        <span class="text-gray-400">Lun-Ven: 8h-18h</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p class="text-gray-500">
+                &copy; 2025 Evotech Africa. Tous droits réservés.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Initialize AOS (Animate on Scroll)
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    });
+</script>
