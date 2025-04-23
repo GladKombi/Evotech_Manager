@@ -7,7 +7,9 @@ include_once('../connexion/connexion.php');
     <div class="sidebar-wrapper active">
         <div class="sidebar-header text-center">
             <img src="../images/logo.jpg" alt="" srcset="">
-            <a href="Accueil.php"><h4>Evotech_Africa</h4></a>
+            <a href="Accueil.php">
+                <h4>Evotech_Africa</h4>
+            </a>
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
@@ -26,15 +28,31 @@ include_once('../connexion/connexion.php');
                 </li>
                 <li <?php if ($ActiveAgent == 1) { ?> class="sidebar-item active" <?php } ?>>
                     <a href="Agent.php" class='sidebar-link'>
-                        <i class="bi bi-person" width="25"></i>
+                        <i class="bi bi-people-fill" width="25"></i>
                         <span>Agents</span>
                     </a>
                 </li>
-                <li <?php if ($ActiveInscription == 1) { ?> class="sidebar-item active" <?php } ?>>
-                    <a href="inscription.php" class='sidebar-link'>
+                <li <?php if ($ActiveAtribut == 1) { ?> class="sidebar-item active" <?php } ?>>
+                    <a href="attribution.php" class='sidebar-link'>
                         <i class="bi bi-calendar-day-fill" width="25"></i>
-                        <span>Inscription</span>
+                        <span>Attribution</span>
                     </a>
+                </li>
+                <li class="sidebar-item  has-sub">
+
+                    <a href="#" class='sidebar-link'>
+                        <i data-feather="triangle" width="20"></i>
+                        <span>Mouvements caisse</span>
+                    </a>
+                    <ul class="submenu ">
+                        <li>
+                            <a href="component-alert.html">Entrées en caisse </a>
+                        </li>
+                        <li>
+                            <a href="component-alert.html">Sorties en caisse </a>
+                        </li>
+                    </ul>
+
                 </li>
                 <li <?php if ($ActivePayement == 1) { ?> class="sidebar-item active" <?php } ?>>
                     <a href="payement.php" class='sidebar-link'>
