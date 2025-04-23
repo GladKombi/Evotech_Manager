@@ -2,7 +2,7 @@
 $ActiveDeparte=0;
 $ActiveRole=0;
 $ActiveAgent=0;
-$ActiveOption=0;
+$ActiveAtribut=0;
 $ActiveCours=0;
 $ActiveHoraire=0;
 $ActiveInformation=0;
