@@ -14,7 +14,7 @@ if (isset($_GET["idSupPro"]) && !empty($_GET["idSupPro"])) {
         $_SESSION['msg'] = "Suppression réussi !";
         header("location:../../views/post-Production.php?idTerrain=$SelectedTerrain");
     } else {
-        $_SESSION['msg'] = "Echec de modification !";
+        $_SESSION['msg'] = "Echec de suppression !";
         header("location:../../views/post-Production.php?idTerrain=$SelectedTerrain");
     }
 } else {
