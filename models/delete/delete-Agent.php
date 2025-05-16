@@ -9,7 +9,7 @@ if (isset($_GET["idSupAgent"]) && !empty($_GET["idSupAgent"])) {
         $_SESSION['msg'] = "Suppression reussi !";
         header("location:../../views/agent.php");
     } else {
-        $_SESSION['msg'] = "Echec de modification !";
+        $_SESSION['msg'] = "Echec de Suppression !";
         header("location:../../views/agent.php");
     }
 } else {

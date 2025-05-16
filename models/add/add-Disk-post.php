@@ -18,9 +18,9 @@ if (isset($_GET["AddDisk"])){
     } else {
         $numero = 1;
     }
-    $matricule = "EKA/D" .$numero. "/HDD";
-echo $matricule;
+    $matricule = "EVO/D" .$numero. "/HDD";
     $statut = 0;
+    # Enregistrement Disque
     $req = $connexion->prepare("INSERT INTO `disk` (matricule,statut) VALUES (?,?)");
     $resultat = $req->execute([$matricule, $statut]);
     if ($resultat == true) {

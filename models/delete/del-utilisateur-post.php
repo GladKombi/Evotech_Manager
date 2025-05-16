@@ -9,7 +9,10 @@ if (isset($_GET['idSupcat']) && !empty($_GET['idSupcat'])) {
   if ($resultat == true) {
     $_SESSION['msg'] = 'Suppression réussie';
     header('location:../../views/utilisateur.php');
-  }
+  }else {
+    $_SESSION['msg'] = "Echec de Suppression !";
+    header("location:../../views/utilisateur.php");
+}
 } else {
   header('location:../../views/utilisateur.php');
 }

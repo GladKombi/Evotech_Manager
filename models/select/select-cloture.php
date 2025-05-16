@@ -2,7 +2,7 @@
 // setlocale(LC_TIME,'fr_FR.UTF-8');
 // $nomMoiActuel = strftime('%B');
 // echo $nomMoiActuel;
-$mois_actuel_nom = date('F');
+$mois_actuel_nom = date('F'); #Recuperation du moi en cours
 $statut = 0;
 $cloture = 0;
 # Selection du total des entrees en dollars
@@ -48,3 +48,7 @@ if($TotalSortieFranc<1){
 # Calcul du Solde
 $soldeDol=$TotalEntreeDol-$TotalSortieDol;
 $soldeFranc= $TotalEntreeFranc-$TotalSortieFranc;
+
+# Selection des infos du projet
+$getProjet = $connexion->prepare("SELECT `projet`.*,partenaire.Denomination, partenaire.adresse, type_projetc.descriprion as `type` FROM `projet`,partenaire, type_projetc WHERE projet.partenaire=partenaire.id AND projet.type_projet=type_projetc.id AND `projet`.statut=?;  ");
+$getProjet->execute([$statut]);

@@ -10,6 +10,9 @@ if (isset($_GET['SupAttrib']) && !empty($_GET['SupAttrib'])) {
     if ($resultat == true) {
         $_SESSION['msg'] = "Suppression de l'attribution réussie";
         header('location:../../views/attribution.php');
+    }else {
+        $_SESSION['msg'] = "Echec de la suppression !";
+        header("location:../../views/attribution.php");
     }
 } else {
     header('location:../../views/attribution.php');
