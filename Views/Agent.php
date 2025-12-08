@@ -162,7 +162,7 @@ require_once('../models/select/select-Agent.php');
                             <a href="Agent.php?NewAgent" class="btn btn-dark w-100">Nouveau Agent</a>
                             <!-- La table qui affiche les données  -->
                             <div class="col-xl-12 col-lg-12 col-md-6 table-responsive px-3 pt-3">
-                                <h4 class="text-center">Liste des rôles</h4>
+                                <h4 class="text-center">Liste des Agents</h4>
                                 <table class='table table-hover' id="table1">
                                     <thead>
                                         <tr>

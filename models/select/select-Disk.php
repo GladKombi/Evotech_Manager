@@ -7,6 +7,7 @@ if (isset($_GET["idDisk"])) {
     $ShowDisk = $getSelectDisk->fetch();
     $DiskMatricule = $ShowDisk['matricule'];
 }
+# Affichage des disk
 $statut = 0;
 $getData = $connexion->prepare("SELECT * FROM `disk` WHERE disk.statut=?;");
 $getData->execute([$statut]);

@@ -80,7 +80,7 @@ require_once('../models/select/select-departement.php');
                                     </div>
                                 </form>
                             </div>
-                            <!-- La table qui affiche les données lorqs de l'enregistrement -->
+                            <!-- La table qui affiche les données lors de l'enregistrement -->
                             <div class="col-xl-8 col-lg-8 col-md-6 table-responsive px-3 pt-3">
                                 <h4 class="text-center">Liste des promotions</h4>
                                 <table class='table table-hover' id="table1">

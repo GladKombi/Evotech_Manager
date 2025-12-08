@@ -39,45 +39,60 @@ include_once('../connexion/connexion.php');
                     </a>
                 </li>
                 <li class="sidebar-item  has-sub">
+                    <a href="#" class='sidebar-link'>
+                        <i data-feather="triangle" width="20"></i>
+                        <span>Menu Projet</span>
+                    </a>
+                    <ul class="submenu ">
+                        <li <?php if ($ActivePartenaire == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="partenaire.php">Partenaires </a>
+                        </li>
+                        <li <?php if ($ActiveType_projet == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="type_projet.php">Types de projets </a>
+                        </li>
+                        <li <?php if ($ActiveProjet == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="project.php">Projets </a>
+                        </li>
+                        <li <?php if ($ActiveProjet == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="production.php">Productions </a>
+                        </li>
+                    </ul>
+
+                </li>
+                <li class="sidebar-item  has-sub">
 
                     <a href="#" class='sidebar-link'>
                         <i data-feather="triangle" width="20"></i>
                         <span>Mouvements caisse</span>
                     </a>
                     <ul class="submenu ">
-                        <li>
-                            <a href="component-alert.html">Entrées en caisse </a>
+                        <li <?php if ($ActiveEntree == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="entree.php">Entrées en caisse </a>
                         </li>
-                        <li>
-                            <a href="component-alert.html">Sorties en caisse </a>
+                        <li <?php if ($ActiveSortie == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="sortie.php">Sortie en caisse </a>
+                        </li>
+                        <li <?php if ($ActiveCloture == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="cloture.php">Cloture </a>
                         </li>
                     </ul>
 
                 </li>
-                <li <?php if ($ActivePayement == 1) { ?> class="sidebar-item active" <?php } ?>>
-                    <a href="payement.php" class='sidebar-link'>
-                        <i class="bi bi-calculator" width="25"></i>
-                        <span>Payement</span>
+                <li class="sidebar-item  has-sub">
+                    <a href="#" class='sidebar-link'>
+                        <i data-feather="triangle" width="20"></i>
+                        <span>Materiels</span>
                     </a>
+                    <ul class="submenu ">
+                        <li <?php if ($ActiveMateriel == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="disk.php">Disk de stockage </a>
+                        </li>
+                        <li <?php if ($ActiveMatos == 1) { ?> class="sidebar-item active" <?php } ?>>
+                            <a href="materiels-Details.php">Equipements </a>
+                        </li>
+                    </ul>
                 </li>
-                <li <?php if ($ActiveAnee == 1) { ?> class="sidebar-item active" <?php } ?>>
-                    <a href="AnneeScolaire.php" class='sidebar-link'>
-                        <i class="bi bi-calendar-day-fill" width="25"></i>
-                        <span>Année Academiques</span>
-                    </a>
-                </li>
-                <li <?php if ($ActivePromo == 1) { ?> class="sidebar-item active" <?php } ?>>
-                    <a href="promotion.php" class='sidebar-link'>
-                        <i class="bi bi-calendar-day-fill" width="25"></i>
-                        <span>Promotion</span>
-                    </a>
-                </li>
-                <li <?php if ($ActiveUser == 1) { ?> class="sidebar-item active" <?php } ?>>
-                    <a href="utilisateurs.php" class='sidebar-link'>
-                        <i data-feather="user" width="25"></i>
-                        <span>Utilisateur</span>
-                    </a>
-                </li>
+               
                 <?php  ?>
 
             </ul>

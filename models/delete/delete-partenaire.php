@@ -9,7 +9,7 @@ if (isset($_GET["idSupPart"]) && !empty($_GET["idSupPart"])) {
         $_SESSION['msg'] = "Suppression reussi !";
         header("location:../../views/partenaire.php");
     } else {
-        $_SESSION['msg'] = "Echec de modification !";
+        $_SESSION['msg'] = "Echec de Suppression !";
         header("location:../../views/partenaire.php");
     }
 } else {
