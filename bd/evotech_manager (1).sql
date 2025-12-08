@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2025 at 06:07 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Dec 08, 2025 at 12:10 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,42 +18,28 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `eka_manager`
+-- Database: `evotech_manager`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `agents`
+-- Table structure for table `attribition`
 --
 
-CREATE TABLE `agents` (
+CREATE TABLE `attribition` (
   `id` int(11) NOT NULL,
-  `nom` varchar(50) NOT NULL,
-  `postnom` varchar(50) NOT NULL,
-  `prenom` varchar(50) NOT NULL,
-  `genre` varchar(50) NOT NULL,
-  `telephone` varchar(50) NOT NULL,
-  `adresse` varchar(100) NOT NULL,
-  `fonction` int(11) NOT NULL,
-  `telephoneReferant` varchar(50) NOT NULL,
-  `pwd` varchar(50) NOT NULL,
-  `mail` text NOT NULL,
-  `profil` text NOT NULL,
+  `user` int(11) NOT NULL,
+  `role` int(11) NOT NULL,
   `statut` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `agents`
+-- Dumping data for table `attribition`
 --
 
-INSERT INTO `agents` (`id`, `nom`, `postnom`, `prenom`, `genre`, `telephone`, `adresse`, `fonction`, `telephoneReferant`, `pwd`, `mail`, `profil`, `statut`) VALUES
-(1, 'Glad', 'Muvunga', 'Rylah', 'Masculin', '09876', 'Kambali', 1, '087654', '1234', '', 'G_Shop6760a4d4bb80c.jpg', 0),
-(2, 'Eloge', 'Muyisa', 'Mumbere', 'Masculin', '0988766544', 'Kambali', 2, '009887', '1234', '', 'Eka_6761c4e239015.jpg', 0),
-(3, 'Bob', 'Comando', 'Zic_Stars', 'Masculin', '0886764', 'kitulu', 2, '0878564', '1234', '', 'Eka_6761c79827016.jpg', 0),
-(4, 'Thanks', 'malikewa', 'Natasha', 'Feminin', '09876554', 'Kitulu', 1, '09876', '1234', '', 'Eka_6761cc7394890.jpg', 0),
-(5, 'anelka', 'vutsumbire', 'Amina', 'Masculin', '09876543', 'vubange', 1, '09877665', '1234', 'anelka@gmail.com', 'Eka_6799600c04b73.jpg', 0),
-(6, 'FXFFG', 'FCXGF', 'CCFC', '', '0990179128', 'CFCFGCC', 0, '', '1234', '', '', 0);
+INSERT INTO `attribition` (`id`, `user`, `role`, `statut`) VALUES
+(1, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -83,8 +69,8 @@ INSERT INTO `categorie` (`id`, `nom`, `statut`) VALUES
 
 CREATE TABLE `departement` (
   `id` int(11) NOT NULL,
-  `nom_Departement` varchar(100) NOT NULL,
-  `denomination` varchar(100) NOT NULL,
+  `nom` varchar(50) NOT NULL,
+  `pseudo` varchar(50) NOT NULL,
   `statut` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -92,9 +78,9 @@ CREATE TABLE `departement` (
 -- Dumping data for table `departement`
 --
 
-INSERT INTO `departement` (`id`, `nom_Departement`, `denomination`, `statut`) VALUES
-(1, 'Development Web', 'Web Developer', 0),
-(2, 'Videographie', 'Videaste', 0);
+INSERT INTO `departement` (`id`, `nom`, `pseudo`, `statut`) VALUES
+(1, 'developement web   ', 'Dev.', 0),
+(2, 'Architucture', 'Ir', 0);
 
 -- --------------------------------------------------------
 
@@ -113,9 +99,7 @@ CREATE TABLE `disk` (
 --
 
 INSERT INTO `disk` (`id`, `matricule`, `statut`) VALUES
-(1, 'EKA/D1/HDD', 0),
-(2, 'EKA/D2/HDD', 0),
-(3, 'EKA/D3/HDD', 0);
+(1, 'EVO/D1/HDD', 0);
 
 -- --------------------------------------------------------
 
@@ -166,8 +150,17 @@ INSERT INTO `mouvementcaisse` (`id`, `date`, `type`, `libelle`, `montant`, `devi
 (2, '2025-01-21', 'Entree', 'prime fepsi', 20000, 'Franc', 0, 1),
 (3, '2025-01-21', 'Sortie', 'Achat carb', 2000, 'Franc', 0, 1),
 (4, '2025-01-21', 'Sortie', 'achat camera', 500, 'Dollard', 0, 1),
-(5, '2025-01-21', 'Entree', 'Réport à nouveau', 500, 'Dollard', 0, 0),
-(6, '2025-01-21', 'Entree', 'Réport à nouveau', 18000, 'Franc', 0, 0);
+(5, '2025-01-21', 'Entree', 'Réport à nouveau', 500, 'Dollard', 0, 1),
+(6, '2025-01-21', 'Entree', 'Réport à nouveau', 18000, 'Franc', 0, 1),
+(7, '2025-03-19', 'Entree', 'ssdsdsdas', 24, 'Dollard', 0, 1),
+(8, '2025-03-20', 'Entree', 'Réport à nouveau', 524, 'Dollard', 0, 0),
+(9, '2025-03-20', 'Entree', 'Réport à nouveau', 18000, 'Franc', 0, 0),
+(10, '2025-04-29', 'Sortie', 'achat imprimente', 234, 'Dollard', 0, 0),
+(11, '2025-04-29', 'Sortie', 'Achat fournitures', 5000, 'Franc', 0, 0),
+(12, '2025-04-29', 'Entree', 'don', 12000, 'Franc', 0, 0),
+(13, '2025-05-09', 'Entree', 'pourcentage africaXtv', 100, 'Dollard', 0, 0),
+(14, '2025-05-09', 'Sortie', 'dgsdfgsdfgsdfg', 120, 'Franc', 0, 0),
+(15, '2025-05-16', 'Entree', 'dhdfhdfhdf', 6, 'Dollard', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -189,10 +182,8 @@ CREATE TABLE `partenaire` (
 --
 
 INSERT INTO `partenaire` (`id`, `Denomination`, `dateSignature`, `adresse`, `telephone`, `statut`) VALUES
-(1, 'Sydip', '2024-12-01', 'Avenu Lubero', '098766', 0),
-(2, 'ACPDI', '2024-12-17', 'Mirador', '097852415212', 0),
-(3, 'SOPROCOPIV', '2024-12-17', 'Vungi', '09876545', 0),
-(4, 'Fepsi', '2024-12-17', 'Du cente', '0987654', 0);
+(1, 'Rylah', '2025-04-24', 'Procure', '0231456479', 0),
+(2, 'fgfsddsfgsd', '2025-04-25', 'fsdfdfdfdqs', '54156454', 0);
 
 -- --------------------------------------------------------
 
@@ -203,7 +194,7 @@ INSERT INTO `partenaire` (`id`, `Denomination`, `dateSignature`, `adresse`, `tel
 CREATE TABLE `participation` (
   `id` int(11) NOT NULL,
   `agent` int(11) NOT NULL,
-  `terrain` int(11) NOT NULL,
+  `projet` int(11) NOT NULL,
   `statut` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -211,14 +202,10 @@ CREATE TABLE `participation` (
 -- Dumping data for table `participation`
 --
 
-INSERT INTO `participation` (`id`, `agent`, `terrain`, `statut`) VALUES
-(1, 1, 1, 0),
-(2, 3, 1, 0),
-(3, 3, 2, 0),
-(4, 4, 2, 0),
-(5, 1, 2, 0),
-(6, 3, 3, 0),
-(7, 4, 3, 0);
+INSERT INTO `participation` (`id`, `agent`, `projet`, `statut`) VALUES
+(1, 1, 1, 1),
+(2, 1, 1, 0),
+(3, 2, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -242,33 +229,67 @@ CREATE TABLE `post_production` (
 --
 
 INSERT INTO `post_production` (`id`, `Typeproduction`, `participation`, `disk`, `emplacement`, `etat`, `livraison`, `statut`) VALUES
-(1, 'Video', 2, 1, 'Eka/Fepsi', 0, 0, 0),
-(2, 'Photo', 1, 1, 'Eka/Fepsi', 0, 0, 0),
-(3, 'photos', 7, 1, 'ekaConsuting/Sopro/photoCafee', 0, 0, 0);
+(1, 'APK', 2, 1, 'Evotech/glad/Mobil', 0, 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `terrain`
+-- Table structure for table `projet`
 --
 
-CREATE TABLE `terrain` (
+CREATE TABLE `projet` (
   `id` int(11) NOT NULL,
   `date` date NOT NULL,
   `description` text NOT NULL,
-  `lieu` varchar(50) NOT NULL,
   `partenaire` int(11) NOT NULL,
+  `type_projet` int(11) NOT NULL,
   `statut` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `terrain`
+-- Dumping data for table `projet`
 --
 
-INSERT INTO `terrain` (`id`, `date`, `description`, `lieu`, `partenaire`, `statut`) VALUES
-(1, '2024-12-22', 'Remise Kits soin', 'Vuhovi', 1, 0),
-(2, '2025-01-03', 'Remise de machine à coudre', 'Lubero', 2, 0),
-(3, '2025-01-06', 'vente cafée', 'lubero', 3, 0);
+INSERT INTO `projet` (`id`, `date`, `description`, `partenaire`, `type_projet`, `statut`) VALUES
+(1, '2025-04-26', 'logiciel de gestion Zora_Business', 1, 1, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role`
+--
+
+CREATE TABLE `role` (
+  `id` int(11) NOT NULL,
+  `fonction` varchar(50) NOT NULL,
+  `statut` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `role`
+--
+
+INSERT INTO `role` (`id`, `fonction`, `statut`) VALUES
+(1, 'Gérant', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `type_projetc`
+--
+
+CREATE TABLE `type_projetc` (
+  `id` int(11) NOT NULL,
+  `descriprion` varchar(100) NOT NULL,
+  `statut` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `type_projetc`
+--
+
+INSERT INTO `type_projetc` (`id`, `descriprion`, `statut`) VALUES
+(1, 'Informatique', 0);
 
 -- --------------------------------------------------------
 
@@ -279,13 +300,13 @@ INSERT INTO `terrain` (`id`, `date`, `description`, `lieu`, `partenaire`, `statu
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `nom` varchar(50) NOT NULL,
-  `postnom` varchar(50) NOT NULL,
   `prenom` varchar(50) NOT NULL,
+  `genre` varchar(50) NOT NULL,
+  `departement` int(11) NOT NULL,
+  `mail` varchar(50) NOT NULL,
   `telephone` varchar(50) NOT NULL,
-  `foction` varchar(50) NOT NULL,
-  `profil` varchar(50) NOT NULL,
-  `pwd` varchar(50) NOT NULL,
-  `mail` varchar(100) NOT NULL,
+  `pwd` text NOT NULL,
+  `profil` varchar(100) NOT NULL,
   `statut` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -293,18 +314,18 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `nom`, `postnom`, `prenom`, `telephone`, `foction`, `profil`, `pwd`, `mail`, `statut`) VALUES
-(1, 'Kombi', 'Ryllah', 'Glad', '098765', 'ceo', 'Eka_67ad0ac35d444.jpg', '1234', 'CEOGlad@Eka.com', 0),
-(2, 'Kamala', 'albert', 'alblack', '0987654', 'Admin', 'Eka_67ad2a29a3004.jpg', '1234', 'Adminalblack@Eka.com', 0);
+INSERT INTO `users` (`id`, `nom`, `prenom`, `genre`, `departement`, `mail`, `telephone`, `pwd`, `profil`, `statut`) VALUES
+(1, 'Kombi', 'Glad', 'Masculin', 1, 'glad@gmail.com', '0997019883', '$2y$10$HpzZqJOOorr9/mYoJ.FUgeV0.9.RQL8NOVO2WLSvLHdT2adkF3V4W', 'Evotech_680564535d262.jpg', 0),
+(2, 'albert', 'jdfjfs', 'Masculin', 1, 'mqil@gmail.com', '098765', '$2y$10$f9M4kCaWy51ad0yH3umNRuzXBKmRQa6K6cofJ0rZPn9uaMx1Oqd/K', 'Evotech_680ce91701c76.jpg', 0);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `agents`
+-- Indexes for table `attribition`
 --
-ALTER TABLE `agents`
+ALTER TABLE `attribition`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -356,9 +377,21 @@ ALTER TABLE `post_production`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `terrain`
+-- Indexes for table `projet`
 --
-ALTER TABLE `terrain`
+ALTER TABLE `projet`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `role`
+--
+ALTER TABLE `role`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `type_projetc`
+--
+ALTER TABLE `type_projetc`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -372,10 +405,10 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `agents`
+-- AUTO_INCREMENT for table `attribition`
 --
-ALTER TABLE `agents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `attribition`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `categorie`
@@ -393,7 +426,7 @@ ALTER TABLE `departement`
 -- AUTO_INCREMENT for table `disk`
 --
 ALTER TABLE `disk`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `materiel`
@@ -405,31 +438,43 @@ ALTER TABLE `materiel`
 -- AUTO_INCREMENT for table `mouvementcaisse`
 --
 ALTER TABLE `mouvementcaisse`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `partenaire`
 --
 ALTER TABLE `partenaire`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `participation`
 --
 ALTER TABLE `participation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `post_production`
 --
 ALTER TABLE `post_production`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `terrain`
+-- AUTO_INCREMENT for table `projet`
 --
-ALTER TABLE `terrain`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `projet`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `role`
+--
+ALTER TABLE `role`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `type_projetc`
+--
+ALTER TABLE `type_projetc`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
