@@ -1,24 +1,72 @@
 <?php
-if (isset($_GET["idModif"])) {
-    $id = $_GET["idModif"];
-    $getAttri = $connexion->prepare("SELECT * FROM attribition WHERE id=?");
-    $getAttri->execute([$id]);
-    $AfichAttrib = $getAttri->fetch();
-    $title = "Modifier l'attribution ";
-    $btn = "Modifier";
-    $url = "../models/updat/update-attribution-post.php?idModif=" . $id;
-} else {
-    $title = "Ajouter une attribution";
-    $btn = "Enregistrer";
-    $url = "../models/add/add-attribution-post.php";
+
+# Variables pour le formulaire
+$url = "../controllers/attribution-controller.php";
+$title = "Nouvelle attribution";
+$btn = "Enregistrer";
+
+# Connexion à la base de données
+require_once('../connexion/connexion.php');
+
+# Initialisation des variables de modification
+$UsersModif = "";
+$FonctionModif = "";
+
+# Requête pour récupérer toutes les attributions
+$getData = $conn->query("
+    SELECT a.attribution_id as id, 
+           u.nom, 
+           u.prenom, 
+           u.email as mail, 
+           u.profil, 
+           r.fonction
+    FROM ATTRIBUTIONS a
+    INNER JOIN UTILISATEURS u ON a.utilisateur_id = u.utilisateur_id
+    INNER JOIN ROLES r ON a.role_id = r.role_id
+    WHERE a.statut = 0
+    ORDER BY a.date_creation DESC
+");
+
+# Requête pour récupérer les utilisateurs
+$getUser = $conn->query("
+    SELECT utilisateur_id as id, 
+           nom, 
+           prenom, 
+           email as mail
+    FROM UTILISATEURS 
+    WHERE statut = 0 
+    AND actif = true
+    ORDER BY nom ASC
+");
+
+# Requête pour récupérer les rôles
+$getRole = $conn->query("
+    SELECT role_id as id, 
+           fonction 
+    FROM ROLES 
+    WHERE statut = 0 
+    ORDER BY fonction ASC
+");
+
+# Logique de modification si un ID est passé
+if (isset($_GET['idModif'])) {
+    $idModif = intval($_GET['idModif']);
+    
+    # Récupération des données à modifier
+    $stmt = $conn->prepare("
+        SELECT utilisateur_id, role_id 
+        FROM ATTRIBUTIONS 
+        WHERE attribution_id = ? AND statut = 0
+    ");
+    $stmt->execute([$idModif]);
+    $attribution = $stmt->fetch();
+    
+    if ($attribution) {
+        $UsersModif = $attribution['utilisateur_id'];
+        $FonctionModif = $attribution['role_id'];
+        $title = "Modifier l'attribution";
+        $btn = "Modifier";
+        $url = "../controllers/attribution-controller.php?idModif=" . $idModif;
+    }
 }
-# Selection des User de la DB
-$statut = 0;
-$getUser = $connexion->prepare("SELECT * FROM `users` WHERE users.statut=?;");
-$getUser->execute([$statut]);
-# Selection des role de la DB
-$getRole = $connexion->prepare("SELECT * FROM `role` WHERE role.statut=?;");
-$getRole->execute([$statut]);
-# Selection of data from attribution
-$getData = $connexion->prepare("SELECT attribition.id, users.profil, users.nom, users.prenom, users.mail, role.fonction FROM `attribition`, `users`, `role` WHERE attribition.user=users.id AND attribition.role=role.id AND attribition.statut=? ORDER BY `attribition`.`id` DESC");
-$getData->execute([$statut]);
+?>

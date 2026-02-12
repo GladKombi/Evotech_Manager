@@ -1,0 +1,210 @@
+
+-- # Structure de base de Donées Gestion Integré Evotech_Africa
+
+-- ## 1. ENTITÉS FONDAMENTALES et RH
+
+-- Table des utilisateurs 
+UTILISATEURS (
+  utilisateur_id INT PRIMARY KEY AUTO_INCREMENT,  
+  nom VARCHAR(100),
+  prenom VARCHAR(100),
+  email VARCHAR(255) UNIQUE, -- genrer automatiquement au Format: prenom_utilisateur-utilisateur_id@Evo.africa
+  mot_de_passe_hash VARCHAR(255),
+  profil VARCHAR(500),
+  actif BOOLEAN DEFAULT true,
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime un utilisateur
+)
+
+-- Table des Départements 
+DEPARTEMENTS (
+  departement_id INT PRIMARY KEY AUTO_INCREMENT,
+  code VARCHAR(10) UNIQUE, -- generer automatiquement au format : 'Dev.', 'Arch.', 'Com'
+  nom VARCHAR(50), -- 'Informatique', 'Architecture', 'Communication'
+  responsable_id INT, -- Référence UTILISATEURS
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime un departement
+)
+
+-- Table des roles pour gerer les roles des administrateurs et cadres de l'entreprise 
+ROLES (
+  role_id INT PRIMARY KEY AUTO_INCREMENT,
+  fonction VARCHAR(50), -- 'DG', 'ChefDepartement', 'actionnaire', 'comptable', 'Chef_projet'
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime un role
+)
+
+-- Table des Arrtibutions des roles aux utilisateurs 
+ATTRIBUTIONS (
+  attribution_id INT PRIMARY KEY AUTO_INCREMENT,
+  utilisateur_id int,
+  role_id int,
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime une attribution
+)
+
+-- TABLE DES AGENTS/EMPLOYÉS (Données RH)
+AGENTS (
+  agent_id INT PRIMARY KEY AUTO_INCREMENT,
+  nom VARCHAR(100),
+  prenom VARCHAR(100),
+  date_naissance DATE,
+  adresse TEXT,
+  telephone_personnel VARCHAR(20),
+  telephone_professionnel VARCHAR(20),
+  email_personnel VARCHAR(255),
+  email_professionnel VARCHAR(255) UNIQUE, -- genrer automatiquement au Format: prenom_agent-agent_id@Evo.africa
+  mot_de_passe_hash VARCHAR(255),
+  departement_id INT , -- Référence DÉPARTEMENTS
+  situation_matrimoniale VARCHAR(30),
+  nombre_enfants INT DEFAULT 0,
+  urgence_nom VARCHAR(100),
+  urgence_telephone VARCHAR(20),
+  photo_profil VARCHAR(500),
+  cv_path VARCHAR(500),
+  etat ENUM('Actif', 'Inactif', 'Suspendu') DEFAULT 'Actif', -- 'Actif', 'Inactif', 'Suspendu'
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime un agent
+)
+
+-- Table des Arrtibutions des roles aux utilisateurs 
+PARTENAIRES (
+  partenaire_id INT PRIMARY KEY AUTO_INCREMENT,
+  nom VARCHAR(200),
+  type ENUM('Entreprise','Particulier') DEFAULT 'Particulier', 
+  telephone VARCHAR(20),
+  adresse TEXT,
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime un partenaire
+)
+
+-- ## 2. MODULE PROJETS
+
+-- Table des categories des projets 
+CATEGORIES_PROJET (
+  categorie_id INT PRIMARY KEY AUTO_INCREMENT,
+  designation VARCHAR(50), -- 'Application Web', 'Bâtiment Résidentiel', 'Campagne Réseaux Sociaux'
+  departement_id INT,  -- Référence DÉPARTEMENTS
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime une categorie
+)
+
+-- Table des projets
+PROJETS (
+  projet_id INT PRIMARY KEY AUTO_INCREMENT,
+  reference VARCHAR(50) UNIQUE, -- Format: EVPRO-2026-001
+  partenaire_id INT , -- Référence CLIENTS (partenaire)
+  description_projet TEXT,
+  categorie_id INT , -- Référence CATÉGORIES_PROJET
+  chef_projet_id INT , -- Référence UTILISATEURS
+  date_debut DATE,
+  date_fin_prevue DATE,
+  etat ENUM('Suspendu', 'En cours', 'Terminé', 'Annulé') DEFAULT 'En cours', 
+  priorite ENUM('Basse', 'Normale', 'Haute', 'Urgent') DEFAULT 'Normale',
+  statut int,-- il est 0 par defaut, Le statut change à 1 quand on supprime un projet
+)
+
+-- Table des participations d'agent au projet
+PARTICIPATION (
+  participation_id INT PRIMARY KEY AUTO_INCREMENT,
+  agent_id INT , -- Référence AGENT
+  projet_id INT , -- Référence Projet
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime une participation
+)
+
+-- Table des assigations des taches
+TACHES (
+  tache_id INT PRIMARY KEY AUTO_INCREMENT,
+  projet_id INT, -- Référence PROJET
+  description_tache VARCHAR(200),
+  assigne_a INT , -- Référence AGENT_PARTICIPATION
+  date_debut_prevue DATE, -- par defaut la date d'enregistrement
+  date_fin_prevue DATE,
+  priorite ENUM('Basse', 'Normale', 'Haute', 'Urgent') DEFAULT 'Normale',
+  etat ENUM('À faire', 'En cours', 'En revue', 'Terminé') DEFAULT 'En cours', 
+  estimation_heures DECIMAL(5,2),
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime une tache
+)
+
+-- ## 3. MODULE TEMPS (TIMESHEET)
+-- Table des TimeSheet
+TIMESHEET (
+  timesheet_id INT PRIMARY KEY AUTO_INCREMENT,
+  tache_id INT , -- Référence AGENT
+  worked_heures DECIMAL(5,2),, -- Les heures passé à travailler 
+  etat ENUM('Brouillon', 'Soumise', 'Validée', 'Refusée') DEFAULT 'Brouillon', 
+  date_soumission DATETIME,
+  valide_par INT, -- Référence UTILISATEURS (chef de projet)
+  date_validation DATETIME,
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime une tache
+)
+
+-- ## 4. MODULE CONTRATS COMMUNICATION 
+
+-- Table des contrat de com
+CONTRATS_COM (
+  contrat_id INT PRIMARY KEY AUTO_INCREMENT,
+  reference VARCHAR(50) UNIQUE, -- Format: CONT-COM-2026-001
+  partenaire_id INT, -- Référence PARTENAIRE
+  type_contrat_id VARCHAR(100), -- 'Gestion Réseaux Sociaux', 'SEO', 'Relations Presse'
+  date_debut DATE,
+  date_fin DATE,
+  montant DECIMAL(15,2),
+  periodicite ENUM('Mensuel', 'Trimestriel', 'Annuel','Forfait', 'Horaire') DEFAULT 'Mensuel', 
+  etat ENUM('Actif', 'En attente', 'Terminé', 'Résilié') DEFAULT 'Actif', 
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime un contrat 
+)
+
+-- Table des activité du contrat de com
+ACTIVITÉS_CONTRAT (
+  activite_id INT PRIMARY KEY AUTO_INCREMENT,
+  contrat_id INT, -- Référence CONTRATS_COM
+  date_activite DATE,
+  description_activite VARCHAR(100), -- 'Publication Facebook', 'Article de blog', 'Newsletter'
+  lien_url VARCHAR(500),
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime una activité 
+)
+
+-- ## 5. MODULE FINANCE & CAISSE gerer par le DG et Comptable
+-- Table des comptes de l'Entreprise 
+COMPTES (
+  compte_id INT PRIMARY KEY AUTO_INCREMENT,
+  nom VARCHAR(100), -- 'Caisse Principale', 'Compte Courant', 'Compte Épargne'
+  type ENUM('Banque','Caisse') DEFAULT 'Caisse', -- 'Banque', 'Caisse'
+  solde_initial DECIMAL(15,2),
+  solde_actuel DECIMAL(15,2),
+  devise VARCHAR(3) DEFAULT '$'
+)
+
+-- Table des mouvement des comptes 
+MOUVEMENT_COMPTE (
+  mouvement_id INT PRIMARY KEY AUTO_INCREMENT,
+  id_compte INT, -- il recupere id qui sera mouvementer
+  type_mouvement ENUM('entrée', 'sortie') NOT NULL,
+  montant DECIMAL(15,2) NOT NULL,
+  motif VARCHAR(200),
+  date_mouvement DATETIME DEFAULT CURRENT_TIMESTAMP,
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime un mouvement  
+)
+
+-- ## 6. MODULE ARCHIVAGE DES PRODUCTIONS gerer par le chef de projet 
+-- Table de type production
+TYPES_PRODUCTION (
+  type_prod_id INT PRIMARY KEY AUTO_INCREMENT,
+  nom VARCHAR(100), -- 'Plan Architecture', 'Code Source', 'Charte Graphique'
+  departement_id INT, -- Référence DÉPARTEMENTS
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime un type 
+)
+
+-- Tables DISK de stockage
+DISK_STOCKAGE (
+  disk_id INT PRIMARY KEY AUTO_INCREMENT,
+  matricule VARCHAR(100), -- Generer automatiquement Format : EVO/D1/HDD
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime un Disk 
+)
+
+-- Table des production
+PRODUCTION (
+  production_id INT PRIMARY KEY AUTO_INCREMENT,
+  projet_id INT , -- Référence PROJETS
+  type_prod_id INT , -- Référence TYPES_PRODUCTION
+  disk_id INT , -- Référence Disk
+  nom_fichier VARCHAR(255),
+  chemin_stockage VARCHAR(500),
+  cloud_url VARCHAR(500),
+  statut int -- il est 0 par defaut, Le statut change à 1 quand on supprime une production
+)
+

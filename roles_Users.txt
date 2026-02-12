@@ -1,0 +1,49 @@
+Résumé des autorisations par rôle :
+🔐 DG/Administrateur (dashboard-admin.php)
+Accès complet à tous les modules
+
+RH & Entités : Gestion utilisateurs, agents, départements, rôles
+
+Projets : Supervision complète, validation, production
+
+Finance : Comptes, mouvements, budgets, rapports
+
+Contrats : Gestion communication, activités, clients
+
+Temps : Supervision timesheets, validation
+
+Système : Paramètres, logs, sécurité
+
+👔 Chef de Département (dashboard-chef.php)
+Contrats Communication : Gestion complète
+
+Équipe : Supervision agents du département
+
+Reporting : Rapports départementaux
+
+📊 Chef de Projet (dashboard-chef-projet.php)
+Projets : Gestion projets assignés
+
+Tâches : Assignation, suivi
+
+Production : Gestion livrables
+
+Timesheet : Validation équipe projet
+
+💰 Comptable (dashboard-comptable.php)
+Finance : Comptes, mouvements, transactions
+
+Budgets : Suivi budgétaire projets
+
+Rapports : Financiers, comptables
+
+Facturation : Clients, fournisseurs
+
+👤 Agent (dashboard-agent.php)
+Timesheet : Saisie temps de travail
+
+Tâches : Consultation tâches assignées
+
+Projets : Participation projets
+
+Profil : Gestion informations personnelles
