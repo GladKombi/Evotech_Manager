@@ -46,7 +46,7 @@ CREATE TABLE ATTRIBUTIONS (
   utilisateur_id INT NOT NULL,
   role_id INT NOT NULL,
   date_attribution DATE DEFAULT CURRENT_DATE,
-  statut INT DEFAULT 0, -- il est 0 par défaut, Le statut change à 1 quand on supprime une attribution
+  statut INT DEFAULT 0, -- il est 0 par défaut, Le statut change à 1 quand on suspend une attribution
   date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -55,25 +55,33 @@ CREATE TABLE AGENTS (
   agent_id INT PRIMARY KEY AUTO_INCREMENT,
   nom VARCHAR(100) NOT NULL,
   prenom VARCHAR(100) NOT NULL,
-  date_naissance DATE,
-  adresse TEXT,
-  telephone_personnel VARCHAR(20),
-  telephone_professionnel VARCHAR(20),
-  email_personnel VARCHAR(255),
-  email_professionnel VARCHAR(255) UNIQUE, -- généré automatiquement au Format: prenom_agent-agent_id@Evo.africa
   mot_de_passe_hash VARCHAR(255) NOT NULL,
-  departement_id INT, -- Référence DÉPARTEMENTS
-  situation_matrimoniale VARCHAR(30),
-  nombre_enfants INT DEFAULT 0,
-  urgence_nom VARCHAR(100),
-  urgence_telephone VARCHAR(20),
-  photo_profil VARCHAR(500),
-  cv_path VARCHAR(500),
+  departement_id INT, -- Référence DÉPARTEMENTS  
   etat ENUM('Actif', 'Inactif', 'Suspendu') DEFAULT 'Actif',
   date_embauche DATE DEFAULT CURRENT_DATE,
   date_depart DATE,
   statut INT DEFAULT 0, -- il est 0 par défaut, Le statut change à 1 quand on supprime un agent
   date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- table des profils des agents (pour la photo de profil)
+CREATE TABLE PROFILS_AGENTS (
+  profil_id INT PRIMARY KEY AUTO_INCREMENT,
+  agent_id INT NOT NULL, -- Référence AGENTS
+  photo_profil VARCHAR(500),
+  date_naissance DATE,
+  adresse TEXT,
+  telephone_personnel VARCHAR(20),
+  telephone_professionnel VARCHAR(20),
+  email_personnel VARCHAR(255),
+  email_professionnel VARCHAR(255) UNIQUE, -- généré automatiquement au Format: prenom_agent-agent@Evo.africa
+  situation_matrimoniale ENUM('Célibataire', 'Marié(e)', 'Divorcé(e)', 'Veuf(ve)') DEFAULT 'Célibataire',
+  nombre_enfants INT DEFAULT 0,
+  urgence_nom VARCHAR(100),
+  urgence_telephone VARCHAR(20),
+  cv_path VARCHAR(500),
+  date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+  statut INT DEFAULT 0 -- il est 0 par défaut, Le statut change à 1 quand on supprime un profil
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des Partenaires (Clients)
@@ -97,7 +105,7 @@ CREATE TABLE PROJETS (
   partenaire_id INT, -- Référence PARTENAIRES
   titre VARCHAR(200) NOT NULL,
   description_projet TEXT,
-  chef_projet_id INT, -- Référence UTILISATEURS
+  chef_projet_id INT, -- Référence UTILISATEURS 
   date_debut DATE,
   date_fin_prevue DATE,
   date_fin_reelle DATE,
@@ -162,7 +170,7 @@ CREATE TABLE CONTRATS_COM (
   date_debut DATE NOT NULL,
   date_fin DATE,
   montant DECIMAL(15,2) NOT NULL,
-  periodicite ENUM('Mensuel', 'Trimestriel', 'Annuel','Forfait', 'Horaire') DEFAULT 'Mensuel',
+  periodicite ENUM('Mensuel','Trimestriel','Annuel','Forfait','Horaire','Hebdomadaire') DEFAULT 'Mensuel',
   responsable_id INT, -- Référence AGENTS (responsable du contrat)
   etat ENUM('Actif', 'En attente', 'Terminé', 'Résilié') DEFAULT 'Actif',
   conditions_particulieres TEXT,
@@ -239,10 +247,6 @@ CREATE TABLE TRANSFERTS_COMPTE (
 CREATE TABLE TYPES_PRODUCTION (
   type_prod_id INT PRIMARY KEY AUTO_INCREMENT,
   nom VARCHAR(100) NOT NULL, -- 'Plan Architecture', 'Code Source', 'Charte Graphique'
-  description TEXT,
-  departement_id INT, -- Référence DÉPARTEMENTS
-  extension_autorisee VARCHAR(100), -- 'pdf,docx,zip', 'dwg,dxf', 'psd,ai'
-  taille_max_mo INT DEFAULT 100,
   statut INT DEFAULT 0, -- il est 0 par défaut, Le statut change à 1 quand on supprime un type
   date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -275,14 +279,5 @@ CREATE TABLE PRODUCTION (
   date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE connexions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    login_time DATETIME NOT NULL,
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    FOREIGN KEY (user_id) REFERENCES utilisateurs(utilisateur_id)
-);
 
-ALTER TABLE utilisateurs ADD COLUMN deleted_at DATETIME NULL;
-ALTER TABLE `contrats_com` CHANGE `periodicite` `periodicite` ENUM('Mensuel','Trimestriel','Annuel','Forfait','Horaire','Hebdomadaire') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT 'Mensuel';
+
