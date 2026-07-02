@@ -1,635 +1,697 @@
 <?php
-// login.php (racine du projet)
+/**
+ * Login.php
+ * Page de connexion Evotech Africa
+ */
 
-// Inclure la connexion à la base de données
-require_once 'connexion/connexion.php';
-// Vérifier si l'utilisateur est déjà connecté
-if (isset($_SESSION['user_id'])) {
-    // Rediriger selon le rôle
-    redirectBasedOnRole();
+session_start();
+
+// Rediriger vers le dashboard si déjà connecté
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    header('Location: views/dashboard.php');
     exit();
 }
 
-// Activer le mode erreur pour le débogage
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Récupérer les messages d'erreur
+$error = $_SESSION['login_error'] ?? null;
+unset($_SESSION['login_error']);
 
-
-
-// Vérifier si la connexion est établie
-if (!$conn) {
-    die("Erreur de connexion à la base de données.");
-}
-
-// Variables pour le formulaire
-$email = '';
-$error = '';
-$userType = 'utilisateur'; // Par défaut
-
-// Traitement du formulaire de connexion
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $userType = $_POST['user_type'] ?? 'utilisateur';
-    $remember = isset($_POST['remember']);
-
-    // Validation des champs
-    if (empty($email) || empty($password)) {
-        $error = "Veuillez remplir tous les champs obligatoires.";
-    } else {
-        try {
-            if ($userType === 'agent') {
-                // Connexion comme AGENT
-                $query = "SELECT 
-                            a.*,
-                            d.nom as departement_nom,
-                            d.code as departement_code
-                          FROM AGENTS a
-                          LEFT JOIN DEPARTEMENTS d ON a.departement_id = d.departement_id
-                          WHERE a.email_professionnel = :email 
-                          AND a.statut = 0";
-
-                $stmt = $conn->prepare($query);
-                $stmt->execute([':email' => $email]);
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                if ($user) {
-                    // Pour le développement : vérifier si le mot de passe est hashé ou en clair
-                    $passwordValid = false;
-
-                    // Vérifier si c'est un hash bcrypt/Argon2
-                    if (password_verify($password, $user['mot_de_passe_hash'])) {
-                        $passwordValid = true;
-                    }
-                    // Sinon, vérifier en texte clair (pour le développement seulement)
-                    elseif ($password === $user['mot_de_passe_hash']) {
-                        $passwordValid = true;
-                        // Recommander de hacher le mot de passe
-                        error_log("ATTENTION: Mot de passe en clair pour l'agent ID: " . $user['agent_id']);
-                    }
-
-                    if ($passwordValid) {
-                        // Vérifier si le compte est actif
-                        if ($user['etat'] === 'Actif') {
-                            // Créer la session
-                            $_SESSION['agent_id'] = $user['agent_id'];
-                            $_SESSION['user_id'] = $user['agent_id'];
-                            $_SESSION['user_type'] = 'agent';
-                            $_SESSION['nom'] = $user['nom'];
-                            $_SESSION['prenom'] = $user['prenom'];
-                            $_SESSION['email'] = $user['email_professionnel'];
-                            $_SESSION['departement_id'] = $user['departement_id'];
-                            $_SESSION['departement_nom'] = $user['departement_nom'];
-                            $_SESSION['role'] = 'Agent';
-                            $_SESSION['photo_profil'] = $user['photo_profil'] ?? '';
-                            $_SESSION['last_login'] = date('Y-m-d H:i:s');
-
-                            // Si "se souvenir de moi" est coché
-                            if ($remember) {
-                                setcookie('evotech_remember', $user['agent_id'], time() + (30 * 24 * 60 * 60), '/');
-                            }
-
-                            // Redirection vers le dashboard des agents
-                            header('Location: Views/dashboard-agent.php');
-                            exit();
-                        } else {
-                            $error = "Votre compte est " . $user['etat'] . ". Contactez l'administrateur.";
-                        }
-                    } else {
-                        $error = "Email ou mot de passe incorrect.";
-                    }
-                } else {
-                    $error = "Email ou mot de passe incorrect.";
-                }
-            } else {
-                // Connexion comme UTILISATEUR (admin, chef, etc.)
-                $query = "SELECT * FROM UTILISATEURS WHERE email = :email AND statut = 0";
-                $stmt = $conn->prepare($query);
-                $stmt->execute([':email' => $email]);
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                if ($user) {
-                    // Pour le développement : vérifier si le mot de passe est hashé ou en clair
-                    $passwordValid = false;
-
-                    // Vérifier si c'est un hash bcrypt/Argon2
-                    if (password_verify($password, $user['mot_de_passe_hash'])) {
-                        $passwordValid = true;
-                    }
-                    // Sinon, vérifier en texte clair (pour le développement seulement)
-                    elseif ($password === $user['mot_de_passe_hash']) {
-                        $passwordValid = true;
-                        error_log("ATTENTION: Mot de passe en clair pour l'utilisateur ID: " . $user['utilisateur_id']);
-                    }
-
-                    if ($passwordValid) {
-                        // Vérifier si le compte est actif
-                        if ($user['actif']) {
-                            // Récupérer les rôles de l'utilisateur
-                            $rolesQuery = "SELECT r.fonction 
-                                         FROM ROLES r
-                                         JOIN ATTRIBUTIONS a ON r.role_id = a.role_id
-                                         WHERE a.utilisateur_id = :user_id 
-                                         AND a.statut = 0 
-                                         AND r.statut = 0";
-                            $rolesStmt = $conn->prepare($rolesQuery);
-                            $rolesStmt->execute([':user_id' => $user['utilisateur_id']]);
-                            $userRoles = $rolesStmt->fetchAll(PDO::FETCH_COLUMN, 0);
-
-                            // Déterminer le rôle principal
-                            $mainRole = 'Utilisateur';
-                            if (in_array('DG', $userRoles)) {
-                                $mainRole = 'DG';
-                            } elseif (in_array('ChefDepartement', $userRoles)) {
-                                $mainRole = 'ChefDepartement';
-                            } elseif (in_array('Chef_projet', $userRoles)) {
-                                $mainRole = 'Chef_projet';
-                            } elseif (in_array('comptable', $userRoles)) {
-                                $mainRole = 'comptable';
-                            } elseif (in_array('actionnaire', $userRoles)) {
-                                $mainRole = 'actionnaire';
-                            }
-
-                            // Créer la session
-                            $_SESSION['user_id'] = $user['utilisateur_id'];
-                            $_SESSION['user_type'] = 'utilisateur';
-                            $_SESSION['nom'] = $user['nom'];
-                            $_SESSION['prenom'] = $user['prenom'];
-                            $_SESSION['email'] = $user['email'];
-                            $_SESSION['profil'] = $user['profil'] ?? '';
-                            $_SESSION['roles'] = $userRoles;
-                            $_SESSION['role'] = $mainRole;
-                            $_SESSION['last_login'] = date('Y-m-d H:i:s');
-
-                            // Si "se souvenir de moi" est coché
-                            if ($remember) {
-                                setcookie('evotech_remember', $user['utilisateur_id'], time() + (30 * 24 * 60 * 60), '/');
-                            }
-
-                            // Redirection basée sur le rôle
-                            redirectBasedOnRole($userRoles);
-                            exit();
-                            
-                        } else {
-                            $error = "Votre compte est désactivé. Contactez l'administrateur.";
-                        }
-                    } else {
-                        $error = "Email ou mot de passe incorrect.";
-                    }
-                } else {
-                    $error = "Email ou mot de passe incorrect.";
-                }
-            }
-        } catch (Exception $e) {
-            $error = "Erreur technique: " . $e->getMessage();
-            error_log("Erreur de connexion: " . $e->getMessage());
-        }
-    }
-}
-
-// Fonction de redirection basée sur le rôle
-function redirectBasedOnRole($roles = null) {
-    if ($roles === null && isset($_SESSION['roles'])) {
-        $roles = $_SESSION['roles'];
-    }
-    
-    if (in_array('DG', $roles)) {
-        header('Location: Views/dashboard-admin.php');
-    } elseif (in_array('ChefDepartement', $roles)) {
-        header('Location: Views/dashboard-chef.php');
-    } elseif (in_array('Chef_projet', $roles)) {
-        header('Location: Views/dashboard-chef-projet.php');
-    } elseif (in_array('comptable', $roles)) {
-        header('Location: Views/dashboard-comptable.php');
-    } else {
-        header('Location: Views/dashboard.php');
-    }
-    exit();
-}
-
-// Vérifier si l'utilisateur a un cookie "se souvenir de moi"
-if (empty($_SESSION['user_id']) && isset($_COOKIE['evotech_remember'])) {
-    $userId = $_COOKIE['evotech_remember'];
-    // Rediriger vers le dashboard général
-    header('Location: Views/dashboard.php');
-    exit();
-}
-
-// Désactiver l'affichage des erreurs après le débogage
-ini_set('display_errors', 0);
+$success = $_SESSION['login_success'] ?? null;
+unset($_SESSION['login_success']);
 ?>
-
 <!DOCTYPE html>
-<html lang="fr" class="h-100">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - EvoTech Africa Manager</title>
-
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Evotech Africa - Connexion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
     <style>
-        :root {
-            --primary: #1e40af;
-            --secondary: #3b82f6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            background: #f5f7fa;
+            padding: 1.5rem;
         }
-        
+
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
-            max-width: 450px;
-            margin: 0 auto;
-        }
-        
-        .login-header {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .login-header::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background: white;
-            border-radius: 2px;
-        }
-        
-        .login-body {
-            padding: 30px;
-        }
-        
-        .logo-container {
-            margin-bottom: 20px;
-        }
-        
-        .logo-img {
-            max-height: 70px;
-            margin-bottom: 15px;
-        }
-        
-        .company-name {
-            font-size: 24px;
-            font-weight: 700;
-            color: white;
-            letter-spacing: 1px;
-        }
-        
-        .form-control {
-            padding: 14px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
-        
-        .btn-login {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            border: none;
-            padding: 16px 30px;
-            font-weight: 600;
-            font-size: 16px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
             width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+            border: 1px solid #eef2f6;
         }
-        
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(30, 64, 175, 0.3);
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .user-type-btn {
-            transition: all 0.3s ease;
-            border: 2px solid #e2e8f0;
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
+
+        .login-header {
+            padding: 2.5rem 2rem 1.5rem;
             text-align: center;
-            height: 100%;
+            border-bottom: 1px solid #eef2f6;
         }
-        
-        .user-type-btn:hover {
-            border-color: #3b82f6;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.1);
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        .user-type-input:checked + .user-type-btn {
-            border-color: #3b82f6;
-            background: linear-gradient(135deg, rgba(30, 64, 175, 0.05), rgba(59, 130, 246, 0.05));
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 10px 20px rgba(30, 64, 175, 0.15);
-        }
-        
-        .type-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #1a3a7a, #4a8fc7);
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 20px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(26, 58, 122, 0.15);
         }
-        
-        .admin-icon {
-            background: rgba(30, 64, 175, 0.1);
-            color: #1e40af;
+
+        .login-header h1 {
+            color: #1a2a3a;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.75rem;
         }
-        
-        .agent-icon {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
+
+        .login-header p {
+            color: #6a7a8a;
+            font-size: 0.85rem;
+            font-weight: 400;
         }
-        
-        .security-badge {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 20px;
-            padding: 8px 15px;
-            font-size: 12px;
-            color: #10b981;
-            display: inline-flex;
+
+        .login-body {
+            padding: 2rem 2rem 2rem;
+        }
+
+        .login-body .welcome {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a2a3a;
+            margin-bottom: 0.25rem;
+        }
+
+        .login-body .subtitle {
+            color: #6a7a8a;
+            font-size: 0.9rem;
+            margin-bottom: 1.75rem;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.25rem;
+            display: flex;
             align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
         }
-        
-        .security-badge i {
-            margin-right: 5px;
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .login-container {
-                max-width: 100%;
-            }
-            
-            .login-header,
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #065f46;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert i {
+            font-size: 1rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a2a3a;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8a9aaa;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.8rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+            color: #1a2a3a;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #4a8fc7;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(74, 143, 199, 0.08);
+        }
+
+        .input-wrapper input::placeholder {
+            color: #aab8c8;
+        }
+
+        .input-wrapper input:focus + i,
+        .input-wrapper input:focus ~ i {
+            color: #4a8fc7;
+        }
+
+        .input-wrapper .input-icon {
+            color: #8a9aaa;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: #4a8fc7;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8a9aaa;
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 0.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #1a3a7a;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #4a5a6a;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #4a8fc7;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .forgot-link {
+            color: #4a8fc7;
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #1a3a7a;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #1a3a7a, #4a8fc7);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            box-shadow: 0 2px 8px rgba(26, 58, 122, 0.15);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(26, 58, 122, 0.2);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-login .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-login.loading .spinner {
+            display: block;
+        }
+
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6a7a8a;
+        }
+
+        .login-footer a {
+            color: #4a8fc7;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            color: #1a3a7a;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            color: #8a9aaa;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 0.75rem;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #4a5a6a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            border-color: #4a8fc7;
+            color: #4a8fc7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 143, 199, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
             .login-body {
-                padding: 20px;
+                padding: 1.5rem 1.25rem 1.5rem;
+            }
+            
+            .login-header {
+                padding: 2rem 1.25rem 1.25rem;
+            }
+
+            .login-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .login-body .welcome {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0f1724;
+            }
+
+            .login-container {
+                background: #1a2438;
+                border-color: #2a3a4a;
+            }
+
+            .login-header {
+                border-bottom-color: #2a3a4a;
+            }
+
+            .login-header h1 {
+                color: #e8ecf0;
+            }
+
+            .login-header p {
+                color: #8a9aaa;
+            }
+
+            .login-body .welcome {
+                color: #e8ecf0;
+            }
+
+            .login-body .subtitle {
+                color: #8a9aaa;
+            }
+
+            .input-wrapper input {
+                background: #0f1724;
+                border-color: #2a3a4a;
+                color: #e8ecf0;
+            }
+
+            .input-wrapper input:focus {
+                background: #1a2438;
+                border-color: #4a8fc7;
+            }
+
+            .input-wrapper input::placeholder {
+                color: #5a6a7a;
+            }
+
+            .input-wrapper i {
+                color: #5a6a7a;
+            }
+
+            .form-group label {
+                color: #c8d8e8;
+            }
+
+            .checkbox-wrapper {
+                color: #8a9aaa;
+            }
+
+            .forgot-link {
+                color: #6aafd7;
+            }
+
+            .forgot-link:hover {
+                color: #8ab8e8;
+            }
+
+            .login-footer {
+                color: #6a8aaa;
+            }
+
+            .login-footer a {
+                color: #6aafd7;
+            }
+
+            .login-footer a:hover {
+                color: #8ab8e8;
+            }
+
+            .social-btn {
+                background: #0f1724;
+                border-color: #2a3a4a;
+                color: #8a9aaa;
+            }
+
+            .social-btn:hover {
+                border-color: #4a8fc7;
+                color: #6aafd7;
+            }
+
+            .divider::before,
+            .divider::after {
+                background: #2a3a4a;
+            }
+
+            .divider span {
+                color: #5a6a7a;
+            }
+
+            .alert-error {
+                background: #1a0a0a;
+                color: #fca5a5;
+                border-color: #3a1a1a;
+            }
+
+            .alert-success {
+                background: #0a1a0a;
+                color: #6ee7b7;
+                border-color: #1a3a1a;
             }
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <div class="login-container">
-                    <!-- En-tête -->
-                    <div class="login-header">
-                        <div class="logo-container">
-                            <img src="images/logo.jpg" alt="EvoTech Africa" class="logo-img">
-                            <div class="company-name">EVOTECH AFRICA</div>
-                        </div>
-                        <h5 class="mb-0">Système de Gestion Intégré</h5>
-                        <small class="opacity-90">Accès sécurisé aux modules</small>
-                    </div>
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <div class="logo-container">
+                <div class="logo-icon">EA</div>
+                <h1>Evotech Africa</h1>
+                <p>Contribuer à l'évolution technologique en Afrique</p>
+            </div>
+        </div>
 
-                    <!-- Corps du formulaire -->
-                    <div class="login-body">
-                        <!-- Messages d'erreur -->
-                        <?php if ($error): ?>
-                            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-exclamation-triangle me-3"></i>
-                                    <div>
-                                        <strong>Erreur de connexion</strong>
-                                        <p class="mb-0"><?= htmlspecialchars($error) ?></p>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <?php endif; ?>
+        <!-- Body -->
+        <div class="login-body">
+            <div class="welcome">Bienvenue 👋</div>
+            <p class="subtitle">Connectez-vous pour accéder à votre espace de travail</p>
 
-                        <!-- Information sur les rôles -->
-                        <div class="alert alert-info mb-4">
-                            <strong><i class="fas fa-info-circle me-2"></i>Rôles et accès</strong>
-                            <p class="mb-0 small">
-                                • <strong>DG/Admin</strong>: Accès complet à tous les modules<br>
-                                • <strong>Chef de Département</strong>: Gestion de département & contrats<br>
-                                • <strong>Chef de Projet</strong>: Gestion des projets & productions<br>
-                                • <strong>Comptable</strong>: Module finance & caisse<br>
-                                • <strong>Agent</strong>: Timesheet & tâches
-                            </p>
-                        </div>
-
-                        <!-- Formulaire de connexion -->
-                        <form action="login.php" method="POST" id="loginForm">
-                            <!-- Sélection du type d'utilisateur -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold mb-3">
-                                    <i class="fas fa-user-tag me-2 text-primary"></i>
-                                    Type de compte
-                                </label>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <input type="radio" name="user_type" value="utilisateur" id="typeUtilisateur"
-                                            class="user-type-input d-none" <?= $userType === 'utilisateur' ? 'checked' : '' ?>>
-                                        <label for="typeUtilisateur" class="user-type-btn">
-                                            <div class="type-icon admin-icon">
-                                                <i class="fas fa-user-shield"></i>
-                                            </div>
-                                            <h6 class="fw-bold mb-1">Administrateur/Staff</h6>
-                                            <small class="text-muted d-block">
-                                                DG, Chefs, Comptables
-                                            </small>
-                                        </label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="radio" name="user_type" value="agent" id="typeAgent"
-                                            class="user-type-input d-none" <?= $userType === 'agent' ? 'checked' : '' ?>>
-                                        <label for="typeAgent" class="user-type-btn">
-                                            <div class="type-icon agent-icon">
-                                                <i class="fas fa-user-tie"></i>
-                                            </div>
-                                            <h6 class="fw-bold mb-1">Employé/Agent</h6>
-                                            <small class="text-muted d-block">
-                                                Collaborateurs, Équipes
-                                            </small>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Champ Email -->
-                            <div class="mb-4">
-                                <label for="email" class="form-label fw-semibold">
-                                    <i class="fas fa-envelope me-2 text-primary"></i>
-                                    Adresse email professionnelle
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">
-                                        <i class="fas fa-at text-muted"></i>
-                                    </span>
-                                    <input type="email" class="form-control border-start-0" id="email" name="email"
-                                        value="<?= htmlspecialchars($email) ?>"
-                                        placeholder="prenom.nom@evo.africa" required>
-                                </div>
-                            </div>
-
-                            <!-- Champ Mot de passe -->
-                            <div class="mb-4">
-                                <label for="password" class="form-label fw-semibold">
-                                    <i class="fas fa-lock me-2 text-primary"></i>
-                                    Mot de passe
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">
-                                        <i class="fas fa-key text-muted"></i>
-                                    </span>
-                                    <input type="password" class="form-control border-start-0" id="password" name="password"
-                                        placeholder="Votre mot de passe" required>
-                                    <button class="btn btn-outline-secondary border-start-0" type="button" id="togglePassword">
-                                        <i class="fas fa-eye" id="eyeIcon"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Options supplémentaires -->
-                            <div class="mb-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                    <label class="form-check-label" for="remember">
-                                        <i class="fas fa-history me-1"></i>
-                                        Se souvenir de moi (30 jours)
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Bouton de connexion -->
-                            <div class="d-grid gap-2 mb-4">
-                                <button type="submit" class="btn btn-login text-white fw-semibold" id="submitBtn">
-                                    <i class="fas fa-sign-in-alt me-2"></i>
-                                    Se connecter
-                                </button>
-                            </div>
-
-                            <!-- Information sécurité -->
-                            <div class="text-center mb-4">
-                                <span class="security-badge">
-                                    <i class="fas fa-shield-alt"></i>
-                                    Connexion sécurisée SSL/TLS
-                                </span>
-                            </div>
-                        </form>
-
-                        <!-- Support -->
-                        <div class="text-center">
-                            <p class="text-muted small mb-2">
-                                <i class="fas fa-headset me-1"></i>
-                                Support technique: support@evotech.africa
-                            </p>
-                            <p class="text-muted small mb-0">
-                                <i class="fas fa-copyright me-1"></i>
-                                <?= date('Y') ?> EvoTech Africa • v1.0.0
-                            </p>
-                        </div>
-                    </div>
+            <!-- Messages -->
+            <?php if ($error): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span><?php echo htmlspecialchars($error); ?></span>
                 </div>
+            <?php endif; ?>
+
+            <?php if ($success): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span><?php echo htmlspecialchars($success); ?></span>
+                </div>
+            <?php endif; ?>
+
+            <!-- Formulaire -->
+            <form id="loginForm" method="POST" action="models/login.php" x-data="loginForm()" @submit.prevent="submit">
+                <div class="form-group">
+                    <label for="email">
+                        Adresse email <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="exemple@evotech-africa.net" 
+                            required
+                            x-model="email"
+                        >
+                    </div>
+                    <template x-if="errors.email">
+                        <p style="color: #dc2626; font-size: 0.8rem; margin-top: 0.3rem;" x-text="errors.email"></p>
+                    </template>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        Mot de passe <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input 
+                            :type="showPassword ? 'text' : 'password'"
+                            id="password" 
+                            name="mot_de_passe" 
+                            placeholder="••••••••" 
+                            required
+                            minlength="6"
+                            x-model="password"
+                        >
+                        <button 
+                            type="button" 
+                            class="password-toggle"
+                            @click="showPassword = !showPassword"
+                            :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                        >
+                            <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                        </button>
+                    </div>
+                    <template x-if="errors.password">
+                        <p style="color: #dc2626; font-size: 0.8rem; margin-top: 0.3rem;" x-text="errors.password"></p>
+                    </template>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" name="remember" x-model="remember">
+                        <span>Se souvenir de moi</span>
+                    </label>
+                    <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+                </div>
+
+                <button type="submit" class="btn-login" :disabled="loading" :class="{ 'loading': loading }">
+                    <span class="spinner"></span>
+                    <span class="btn-text">
+                        Se connecter
+                    </span>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>
+                    Vous n'avez pas de compte ? 
+                    <a href="#">Contacter l'administrateur</a>
+                </p>
+                <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #8a9aaa;">
+                    &copy; <?php echo date('Y'); ?> Evotech Africa
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Toggle affichage mot de passe
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
+        function loginForm() {
+            return {
+                email: '',
+                password: '',
+                remember: false,
+                showPassword: false,
+                loading: false,
+                errors: {},
+                
+                submit() {
+                    // Réinitialiser les erreurs
+                    this.errors = {};
+                    this.loading = true;
 
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            }
-        });
+                    // Validation
+                    if (!this.email) {
+                        this.errors.email = 'L\'adresse email est requise';
+                    } else if (!this.isValidEmail(this.email)) {
+                        this.errors.email = 'Veuillez entrer une adresse email valide';
+                    }
 
-        // Gestion de la soumission du formulaire
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
+                    if (!this.password) {
+                        this.errors.password = 'Le mot de passe est requis';
+                    } else if (this.password.length < 6) {
+                        this.errors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+                    }
 
-            // Désactiver le bouton et montrer un indicateur de chargement
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Connexion en cours...
-            `;
+                    // Si erreurs, arrêter
+                    if (Object.keys(this.errors).length > 0) {
+                        this.loading = false;
+                        return;
+                    }
 
-            return true;
-        });
+                    // Soumettre le formulaire
+                    document.getElementById('loginForm').submit();
+                },
 
-        // Auto-focus sur le champ email
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                document.getElementById('email').focus();
-            }, 300);
-        });
-
-        // Animation sur les boutons de type
-        document.querySelectorAll('.user-type-btn').forEach(btn => {
-            btn.addEventListener('mouseenter', function() {
-                if (!this.previousElementSibling.checked) {
-                    this.style.transform = 'translateY(-3px)';
+                isValidEmail(email) {
+                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
                 }
-            });
-            
-            btn.addEventListener('mouseleave', function() {
-                if (!this.previousElementSibling.checked) {
-                    this.style.transform = 'translateY(0)';
-                }
-            });
-        });
-
-        // Vérification des champs
-        document.getElementById('email').addEventListener('blur', function() {
-            if (this.value && !this.value.includes('@evo.africa') && !this.value.includes('@')) {
-                this.classList.add('is-invalid');
-            } else {
-                this.classList.remove('is-invalid');
             }
-        });
+        }
     </script>
 </body>
 </html>
