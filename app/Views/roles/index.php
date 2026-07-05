@@ -1,0 +1,5 @@
+<div class="page-head"><div><h1><?= App\Core\Helpers::e($title) ?></h1><p>Gestion du module Roles</p></div><button class="btn-primary" onclick="openModal('modalForm')">+ Ajouter</button></div>
+<div class="card"><table><thead><tr><th>fonction</th><th>Actions</th></tr></thead><tbody>
+<?php foreach($items as $item): ?><tr><td><?= App\Core\Helpers::e($item['fonction'] ?? '') ?></td><td><form method="post" action="<?= App\Core\Helpers::url('roles/delete') ?>"><input type="hidden" name="id" value="<?= $item['role_id'] ?>"><button class="btn-danger">Supprimer</button></form></td></tr><?php endforeach; ?>
+</tbody></table></div>
+<div id="modalForm" class="modal"><div class="modal-box"><h2>Ajouter</h2><form method="post" action="<?= App\Core\Helpers::url('roles/store') ?>"><label>fonction<input name="fonction" class="form-control" required></label><div class="actions"><button type="button" onclick="closeModal('modalForm')">Annuler</button><button class="btn-primary">Enregistrer</button></div></form></div></div>

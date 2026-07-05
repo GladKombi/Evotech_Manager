@@ -1,0 +1,7 @@
+{
+  "name": "evotech/africa-mvc-enterprise",
+  "description": "Application MVC PHP native pour la gestion intégrée Evotech Africa",
+  "type": "project",
+  "autoload": {"psr-4": {"App\\": "app/"}},
+  "require": {"php": ">=8.1"}
+}
